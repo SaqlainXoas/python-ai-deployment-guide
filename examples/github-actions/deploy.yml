@@ -1,0 +1,39 @@
+name: Deploy to VPS
+
+# Trigger deployment on push to main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Navigate to project directory
+            cd /python-hosting/my-api
+
+            # Pull latest code from GitHub
+            git pull origin main
+
+            # Activate virtual environment and install dependencies
+            # NOTE: venv was created during initial setup (NOT in workflow)
+            source venv/bin/activate
+            pip install -r requirements.txt
+
+            # Restart services to load new code
+            sudo systemctl restart fastapi-api
+            sudo systemctl restart celery-worker
+
+            # Optional: Wait and check if services started successfully
+            sleep 3
+            sudo systemctl is-active --quiet fastapi-api && echo "FastAPI is running" || echo "FastAPI failed to start"
+            sudo systemctl is-active --quiet celery-worker && echo "Celery is running" || echo "Celery failed to start"

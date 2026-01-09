@@ -1,0 +1,25 @@
+[Unit]
+Description=Celery Worker for FastAPI Application
+After=network.target redis.service
+Requires=redis.service
+
+[Service]
+Type=simple
+User=your-user
+Group=your-user
+WorkingDirectory=/python-hosting/my-api
+Environment="PATH=/python-hosting/my-api/venv/bin"
+ExecStart=/python-hosting/my-api/venv/bin/celery -A tasks worker --loglevel=info
+Restart=always
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+
+# Security settings (optional but recommended)
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
