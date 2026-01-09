@@ -44,8 +44,8 @@ server {
     listen 80;
     server_name api.example.com;
 
-    location /python/ {
-        proxy_pass http://127.0.0.1:8000/;
+    location /python {
+        proxy_pass http://127.0.0.1:8000;
         proxy_http_version 1.1;
 
         # Preserve client information
@@ -57,7 +57,7 @@ server {
 }
 ```
 
-**Key point:** Location `/python/` matches FastAPI `root_path="/python"`
+**Key point:** Location `/python` matches FastAPI `root_path="/python"`
 
 ---
 
@@ -115,8 +115,8 @@ server {
     proxy_read_timeout 600;
 
     # FastAPI application
-    location /python/ {
-        proxy_pass http://127.0.0.1:8000/;
+    location /python {
+        proxy_pass http://127.0.0.1:8000;
         proxy_http_version 1.1;
 
         # WebSocket support (if needed)
@@ -193,7 +193,7 @@ sudo journalctl -u fastapi-api -f
 **Cause:** Route mismatch
 
 **Fix:** Ensure Nginx location matches FastAPI root_path
-- Nginx: `location /python/`
+- Nginx: `location /python`
 - FastAPI: `root_path="/python"`
 
 ---
@@ -206,13 +206,13 @@ server {
     server_name api.example.com;
 
     # FastAPI app
-    location /python/ {
-        proxy_pass http://127.0.0.1:8000/;
+    location /python {
+        proxy_pass http://127.0.0.1:8000;
     }
 
     # Node.js app
-    location /api/ {
-        proxy_pass http://127.0.0.1:3000/;
+    location /api {
+        proxy_pass http://127.0.0.1:3000;
     }
 
     # Static website
